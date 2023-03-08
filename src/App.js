@@ -1,25 +1,50 @@
-import logo from './logo.svg';
+import { Component } from 'react';
 import './App.css';
+import CardList from './components/card-list/card-list.component';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+
+  constructor(){
+    super();
+
+    this.state = {
+      pokemonList: [],
+      searchString:''
+    }
+  }
+
+  componentDidMount() {
+
+    fetch('https://localhost:7213/Pokedex')
+    .then(response => response.json())
+    .then(pokemonList => {
+      this.setState({pokemonList});
+    });
+
+  }
+
+  onSearhChange = (event) => {      
+    const searchString = event.target.value.toLocaleLowerCase();   
+    this.setState(() =>{ return {searchString} })
+  }
+
+  render(){
+
+    const { pokemonList, searchString } = this.state;
+    const { onSearhChange } = this;
+    const filteredPokemon = pokemonList.filter( pokemon => pokemon.name.toLocaleLowerCase().includes(searchString));
+
+    return (
+      <div className="App">
+        
+        <input className='search-box' type='search' placeholder='search pokemon' onChange= {onSearhChange}/>
+
+        <CardList pokemonList={filteredPokemon} />
+                     
+      </div>
+    );
+  }
 }
+
 
 export default App;
